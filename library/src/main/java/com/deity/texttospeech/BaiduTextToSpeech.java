@@ -47,13 +47,12 @@ public class BaiduTextToSpeech {
             offlineResource = new OfflineResource(context, voiceType);
         } catch (IOException e) {
             // IO 错误自行处理
-            e.printStackTrace();
             Log.d(TAG,"【error】:copy files from assets failed." + e.getMessage());
         }
         return offlineResource;
     }
 
-    private void initBaiduTextToSpeechHandleThread(){
+    private void initBaiduTextToSpeechHandleThread(final Map<String, String> params){
         initHandleThread = new HandlerThread("initHandleThread");
         initHandleThread.start();
         initHandler = new Handler(initHandleThread.getLooper()){
@@ -62,7 +61,7 @@ public class BaiduTextToSpeech {
                 super.handleMessage(msg);
                 switch (msg.what){
                     case INIT:
-                        initBaiduTextToSpeech(context);
+                        initBaiduTextToSpeech(context,params);
                         break;
                     case RELEASE:
                         break;
@@ -74,7 +73,7 @@ public class BaiduTextToSpeech {
         initHandler.sendEmptyMessage(INIT);
     }
 
-    private void initBaiduTextToSpeech(Context context){
+    private void initBaiduTextToSpeech(Context context,Map<String, String> params){
         WeakReference<Context> weakReference = new WeakReference<>(context);
         // 离线资源文件， 从assets目录中复制到临时目录，需要在initTTs方法前完成
         OfflineResource offlineResource = createOfflineResource(weakReference.get(), Params.offlineVoice);
@@ -102,6 +101,7 @@ public class BaiduTextToSpeech {
             mSpeechSynthesizer.setParam(SpeechSynthesizer.PARAM_TTS_SPEECH_MODEL_FILE, Params.MODEL_FILENAME);
         }
 
+
         // 5. 以下setParam 参数选填。不填写则默认值生效
         // 设置在线发声音人： 0 普通女声（默认） 1 普通男声 2 特别男声 3 情感男声<度逍遥> 4 情感儿童声<度丫丫>
         mSpeechSynthesizer.setParam(SpeechSynthesizer.PARAM_SPEAKER, "4");
@@ -112,25 +112,25 @@ public class BaiduTextToSpeech {
         // 设置合成的语调，0-9 ，默认 5
         mSpeechSynthesizer.setParam(SpeechSynthesizer.PARAM_PITCH, "5");
         mSpeechSynthesizer.setParam(SpeechSynthesizer.PARAM_MIX_MODE, SpeechSynthesizer.MIX_MODE_DEFAULT);
-        // 该参数设置为TtsMode.MIX生效。即纯在线模式不生效。
-        // MIX_MODE_DEFAULT 默认 ，wifi状态下使用在线，非wifi离线。在线状态下，请求超时6s自动转离线
-        // MIX_MODE_HIGH_SPEED_SYNTHESIZE_WIFI wifi状态下使用在线，非wifi离线。在线状态下， 请求超时1.2s自动转离线
-        // MIX_MODE_HIGH_SPEED_NETWORK ， 3G 4G wifi状态下使用在线，其它状态离线。在线状态下，请求超时1.2s自动转离线
-        // MIX_MODE_HIGH_SPEED_SYNTHESIZE, 2G 3G 4G wifi状态下使用在线，其它状态离线。在线状态下，请求超时1.2s自动转离线
 
+        if (null!=params){//setParam 参数选填。不填写则默认值生效
+            for (Map.Entry<String, String> entry:params.entrySet()){
+                mSpeechSynthesizer.setParam(entry.getKey(),entry.getValue());
+            }
+        }
         mSpeechSynthesizer.setAudioStreamType(AudioManager.MODE_IN_CALL);
         // 不使用压缩传输
         // mSpeechSynthesizer.setParam(SpeechSynthesizer.PARAM_AUDIO_ENCODE, SpeechSynthesizer.AUDIO_ENCODE_PCM);
         // mSpeechSynthesizer.setParam(SpeechSynthesizer.PARAM_AUDIO_RATE, SpeechSynthesizer.AUDIO_BITRATE_PCM);
 
         // x. 额外 ： 自动so文件是否复制正确及上面设置的参数
-        Map<String, String> params = new HashMap<>();
+        Map<String, String> checkParams = new HashMap<>();
         // 复制下上面的 mSpeechSynthesizer.setParam参数
         if (Params.ttsMode.equals(TtsMode.MIX)) {
-            params.put(SpeechSynthesizer.PARAM_TTS_TEXT_MODEL_FILE, Params.TEXT_FILENAME);
-            params.put(SpeechSynthesizer.PARAM_TTS_SPEECH_MODEL_FILE, Params.MODEL_FILENAME);
+            checkParams.put(SpeechSynthesizer.PARAM_TTS_TEXT_MODEL_FILE, Params.TEXT_FILENAME);
+            checkParams.put(SpeechSynthesizer.PARAM_TTS_SPEECH_MODEL_FILE, Params.MODEL_FILENAME);
         }
-        InitConfig initConfig =  new InitConfig(Params.appId, Params.appKey, Params.secretKey, Params.ttsMode, params, listener);
+        InitConfig initConfig =  new InitConfig(Params.appId, Params.appKey, Params.secretKey, Params.ttsMode, checkParams, listener);
         AutoCheck.getInstance(weakReference.get()).check(initConfig, new Handler() {
             @Override
             public void handleMessage(Message msg) {//开新线程检查，成功后回调
@@ -149,9 +149,9 @@ public class BaiduTextToSpeech {
         Log.d(TAG, "initTts:"+result);
     }
 
-    private BaiduTextToSpeech(Context context){
+    private BaiduTextToSpeech(Context context,Map<String, String> params){
         this.context = context;
-        initBaiduTextToSpeechHandleThread();
+        initBaiduTextToSpeechHandleThread(params);
     }
 
 //    private static class NoLeakHandler extends Handler{
@@ -162,11 +162,29 @@ public class BaiduTextToSpeech {
 //        }
 //    }
 
+
+    /**
+     * 获取唯一实例
+     * @param context 上下文
+     * @param params  参数内容
+     * @return  实例
+     */
+    public static BaiduTextToSpeech getInstance(Context context,Map<String, String> params){
+        if (null==baiduTextToSpeech){
+            synchronized (BaiduTextToSpeech.class){
+                if (null==baiduTextToSpeech){
+                    baiduTextToSpeech = new BaiduTextToSpeech(context,params);
+                }
+            }
+        }
+        return baiduTextToSpeech;
+    }
+
     public static BaiduTextToSpeech getInstance(Context context){
         if (null==baiduTextToSpeech){
             synchronized (BaiduTextToSpeech.class){
                 if (null==baiduTextToSpeech){
-                    baiduTextToSpeech = new BaiduTextToSpeech(context);
+                    baiduTextToSpeech = new BaiduTextToSpeech(context,null);
                 }
             }
         }
@@ -177,7 +195,7 @@ public class BaiduTextToSpeech {
      * 调用该方法进行语音输出
      * @param message 文本内容
      */
-    public void Speek(String message){
+    public void speak(String message){
         if (mSpeechSynthesizer == null) {
             Log.d(TAG,"[ERROR], 初始化失败");
             return;

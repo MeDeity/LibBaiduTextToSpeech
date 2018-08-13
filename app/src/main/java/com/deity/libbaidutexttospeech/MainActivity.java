@@ -28,13 +28,13 @@ public class MainActivity extends AppCompatActivity {
         BaiduTextToSpeech.getInstance(MainActivity.this);
         btn_speak = this.findViewById(R.id.btn_speak);
         et_content = this.findViewById(R.id.et_content);
-        et_content.setText("厦门科拓通讯技术股份有限公司是中国智慧停车场的缔造者，致力于研发并提供多元全面的智慧停车场应用解决方案，包括全视频智慧停车场解决方案、多样化停车场车位引导解决方案、城市停车诱导解决方案，构成了一套各有针对性的完整的解决方案体系，为增加停车场使用率、提升经营者经济效益、改善城市交通状况、提高驾驶人员停车效率提供有效的技术支持");
+        et_content.setText("厦门科拓(tuo4)通讯技术股份有限公司是中国智慧停车场的缔造者，致力于研发并提供多元全面的智慧停车场应用解决方案，包括全视频智慧停车场解决方案、多样化停车场车位引导解决方案、城市停车诱导解决方案，构成了一套各有针对性的完整的解决方案体系，为增加停车场使用率、提升经营者经济效益、改善城市交通状况、提高驾驶人员停车效率提供有效的技术支持");
         btn_speak.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String data = et_content.getText().toString();
-                String result = TextUtils.isEmpty(data)?"你好,我是科拓速泊小管家,调皮,年轻，活泼，捣蛋,成长,更快，更强，更智能":data;
-                BaiduTextToSpeech.getInstance(MainActivity.this).Speek(result);
+                String result = TextUtils.isEmpty(data)?"你好,我是科拓速泊小管家":data;
+                BaiduTextToSpeech.getInstance(MainActivity.this).speak(result);
             }
         });
         initPermission();
