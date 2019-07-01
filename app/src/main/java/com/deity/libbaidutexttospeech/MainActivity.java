@@ -28,12 +28,12 @@ public class MainActivity extends AppCompatActivity {
         BaiduTextToSpeech.getInstance(MainActivity.this);
         btn_speak = this.findViewById(R.id.btn_speak);
         et_content = this.findViewById(R.id.et_content);
-        et_content.setText("厦门科拓(tuo4)通讯技术股份有限公司是中国智慧停车场的缔造者，致力于研发并提供多元全面的智慧停车场应用解决方案，包括全视频智慧停车场解决方案、多样化停车场车位引导解决方案、城市停车诱导解决方案，构成了一套各有针对性的完整的解决方案体系，为增加停车场使用率、提升经营者经济效益、改善城市交通状况、提高驾驶人员停车效率提供有效的技术支持");
+        et_content.setText("泉州立亿软件有限公司成立于2017年，公司设于泉州软件园。致力于信息技术研发和专业人才培养，集软件开发，服务外包，大数据应用及企业技术服务，高端人才培训于一体。目前公司需要产品主要有物业管理软件，皮革生产管理系统，市区县绩效综合目标管理考评系统，二级分销会员系统，电梯维保云平台，派单管理软件等");
         btn_speak.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String data = et_content.getText().toString();
-                String result = TextUtils.isEmpty(data)?"你好,我是科拓速泊小管家":data;
+                String result = TextUtils.isEmpty(data)?"欢迎使用百度语音合成工具库":data;
                 BaiduTextToSpeech.getInstance(MainActivity.this).speak(result);
             }
         });
