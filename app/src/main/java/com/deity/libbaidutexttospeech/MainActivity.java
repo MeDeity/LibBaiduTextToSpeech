@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.deity.texttospeech.BaiduTextToSpeech;
+import com.deity.texttospeech.data.AuthEntity;
 
 import java.util.ArrayList;
 
@@ -25,16 +26,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        BaiduTextToSpeech.getInstance(MainActivity.this);
+        //TODO 请自行变更为自己申请的ID
+        final AuthEntity entity = new AuthEntity("16722234","pbXeOaX72Vi34I7m2CDz7K3k","wMDXW780SshFBkIgnAjf0SnSfftG2Ko7");
         btn_speak = this.findViewById(R.id.btn_speak);
         et_content = this.findViewById(R.id.et_content);
-        et_content.setText("泉州立亿软件有限公司成立于2017年，公司设于泉州软件园。致力于信息技术研发和专业人才培养，集软件开发，服务外包，大数据应用及企业技术服务，高端人才培训于一体。目前公司需要产品主要有物业管理软件，皮革生产管理系统，市区县绩效综合目标管理考评系统，二级分销会员系统，电梯维保云平台，派单管理软件等");
+        et_content.setText("欢迎使用百度语音合成工具库");
         btn_speak.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String data = et_content.getText().toString();
                 String result = TextUtils.isEmpty(data)?"欢迎使用百度语音合成工具库":data;
-                BaiduTextToSpeech.getInstance(MainActivity.this).speak(result);
+                BaiduTextToSpeech.getInstance(MainActivity.this,entity).speak(result);
             }
         });
         initPermission();
