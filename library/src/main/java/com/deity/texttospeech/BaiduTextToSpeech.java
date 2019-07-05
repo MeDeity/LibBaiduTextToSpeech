@@ -11,6 +11,7 @@ import com.baidu.tts.auth.AuthInfo;
 import com.baidu.tts.client.SpeechSynthesizer;
 import com.baidu.tts.client.SpeechSynthesizerListener;
 import com.baidu.tts.client.TtsMode;
+import com.deity.texttospeech.data.AuthEntity;
 import com.deity.texttospeech.data.InitConfig;
 import com.deity.texttospeech.data.MessageListener;
 import com.deity.texttospeech.utils.AutoCheck;
@@ -52,7 +53,7 @@ public class BaiduTextToSpeech {
         return offlineResource;
     }
 
-    private void initBaiduTextToSpeechHandleThread(final Map<String, String> params){
+    private void initBaiduTextToSpeechHandleThread(final AuthEntity entity, final Map<String, String> params){
         initHandleThread = new HandlerThread("initHandleThread");
         initHandleThread.start();
         initHandler = new Handler(initHandleThread.getLooper()){
@@ -61,7 +62,7 @@ public class BaiduTextToSpeech {
                 super.handleMessage(msg);
                 switch (msg.what){
                     case INIT:
-                        initBaiduTextToSpeech(context,params);
+                        initBaiduTextToSpeech(context,entity,params);
                         break;
                     case RELEASE:
                         break;
@@ -73,7 +74,7 @@ public class BaiduTextToSpeech {
         initHandler.sendEmptyMessage(INIT);
     }
 
-    private void initBaiduTextToSpeech(Context context,Map<String, String> params){
+    private void initBaiduTextToSpeech(Context context, AuthEntity entity,Map<String, String> params){
         WeakReference<Context> weakReference = new WeakReference<>(context);
         // 离线资源文件， 从assets目录中复制到临时目录，需要在initTTs方法前完成
         OfflineResource offlineResource = createOfflineResource(weakReference.get(), Params.offlineVoice);
@@ -84,9 +85,9 @@ public class BaiduTextToSpeech {
         SpeechSynthesizerListener listener = new MessageListener();
         mSpeechSynthesizer.setSpeechSynthesizerListener(listener);
         // 3. 设置appId，appKey.secretKey
-        int result = mSpeechSynthesizer.setAppId(Params.appId);
+        int result = mSpeechSynthesizer.setAppId(entity.getAppId());
         Log.d(TAG,"setAppId:"+result);
-        result = mSpeechSynthesizer.setApiKey(Params.appKey, Params.secretKey);
+        result = mSpeechSynthesizer.setApiKey(entity.getAppKey(), entity.getSecretKey());
         Log.d(TAG,"setApiKey:"+result);
 
         // 4. 支持离线的话，需要设置离线模型
@@ -130,7 +131,7 @@ public class BaiduTextToSpeech {
             checkParams.put(SpeechSynthesizer.PARAM_TTS_TEXT_MODEL_FILE, Params.TEXT_FILENAME);
             checkParams.put(SpeechSynthesizer.PARAM_TTS_SPEECH_MODEL_FILE, Params.MODEL_FILENAME);
         }
-        InitConfig initConfig =  new InitConfig(Params.appId, Params.appKey, Params.secretKey, Params.ttsMode, checkParams, listener);
+        InitConfig initConfig =  new InitConfig(entity.getAppId(), entity.getAppKey(), entity.getSecretKey(), Params.ttsMode, checkParams, listener);
         AutoCheck.getInstance(weakReference.get()).check(initConfig, new Handler() {
             @Override
             public void handleMessage(Message msg) {//开新线程检查，成功后回调
@@ -149,9 +150,9 @@ public class BaiduTextToSpeech {
         Log.d(TAG, "initTts:"+result);
     }
 
-    private BaiduTextToSpeech(Context context,Map<String, String> params){
+    private BaiduTextToSpeech(Context context,AuthEntity entity,Map<String, String> params){
         this.context = context;
-        initBaiduTextToSpeechHandleThread(params);
+        initBaiduTextToSpeechHandleThread(entity,params);
     }
 
 //    private static class NoLeakHandler extends Handler{
@@ -169,22 +170,22 @@ public class BaiduTextToSpeech {
      * @param params  参数内容
      * @return  实例
      */
-    public static BaiduTextToSpeech getInstance(Context context,Map<String, String> params){
+    public static BaiduTextToSpeech getInstance(Context context,AuthEntity entity,Map<String, String> params){
         if (null==baiduTextToSpeech){
             synchronized (BaiduTextToSpeech.class){
                 if (null==baiduTextToSpeech){
-                    baiduTextToSpeech = new BaiduTextToSpeech(context,params);
+                    baiduTextToSpeech = new BaiduTextToSpeech(context,entity,params);
                 }
             }
         }
         return baiduTextToSpeech;
     }
 
-    public static BaiduTextToSpeech getInstance(Context context){
+    public static BaiduTextToSpeech getInstance(Context context,AuthEntity entity){
         if (null==baiduTextToSpeech){
             synchronized (BaiduTextToSpeech.class){
                 if (null==baiduTextToSpeech){
-                    baiduTextToSpeech = new BaiduTextToSpeech(context,null);
+                    baiduTextToSpeech = new BaiduTextToSpeech(context,entity,null);
                 }
             }
         }

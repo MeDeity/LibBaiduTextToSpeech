@@ -11,12 +11,6 @@ import java.io.File;
  **/
 public class Params {
 
-    public static String appId = "11655957";
-
-    public static String appKey = "e5BpBvO6y8gL6sT7WwYm9inH";
-
-    public static String secretKey = "YDCZ0D1o5IHIyovYFqL7jwZylmoyGVRU";
-
     // TtsMode.MIX; 离在线融合，在线优先； TtsMode.ONLINE 纯在线； 没有纯离线
     public static TtsMode ttsMode = TtsMode.MIX;
 

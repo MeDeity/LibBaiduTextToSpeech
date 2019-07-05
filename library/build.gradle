@@ -26,6 +26,9 @@ android {
         }
     }
 
+    lintOptions {
+        abortOnError false
+    }
 
     buildTypes {
         release {
@@ -47,7 +50,7 @@ dependencies {
 
 
 // 声明当前的版本号
-version = "1.0.0"
+version = "1.0.1"
 //定义当前library的站点
 def siteUrl = 'https://github.com/MeDeity/LibBaiduTextToSpeech'    // project homepage
 def gitUrl = 'https://github.com/MeDeity/LibBaiduTextToSpeech' // project git
@@ -68,6 +71,7 @@ task javadoc(type: Javadoc) {
     //编码GBK的不可映射字符->请正确配置javadoc编码
     options.encoding "UTF-8"
     options.charSet 'UTF-8'
+    options.addStringOption('Xdoclint:none', '-quiet')
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 }
