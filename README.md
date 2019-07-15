@@ -10,21 +10,29 @@ implementation 'com.deity.texttospeech:library:1.0.1'
 二、推荐在application中初始化组件库
 其中appId/appKey/secretKey 请自行上[百度开发者平台](https://ai.baidu.com/tech/speech/tts)进行申请
 ```java
-public void onCreate() {
-  ...
-  AuthEntity entity = new AuthEntity("appId","appKey","secretKey");
-  baiduTextToSpeech = BaiduTextToSpeech.getInstance(this,entity);
-}
+public class CustomApplication extends Application{
+  public static CustomApplication instance;
+  
+  public void onCreate() {
+    ...
+    instance = this;
+    AuthEntity entity = new AuthEntity("appId","appKey","secretKey");
+    baiduTextToSpeech = BaiduTextToSpeech.getInstance(this,entity);
+  }
+  
+  public CustomApplication getInstance(){
+    return instance;
+  }
 
-
-public BaiduTextToSpeech getBaiduTextToSpeech() {
-    return baiduTextToSpeech;
+  public BaiduTextToSpeech getBaiduTextToSpeech() {
+      return baiduTextToSpeech;
+  }
 }
 ```
 
 三、语音合成
 ```java
-Application.getInstance().getBaiduTextToSpeech().speak("欢迎使用百度语音合成"));
+CustomApplication.getInstance().getBaiduTextToSpeech().speak("欢迎使用百度语音合成"));
 ```
 
 
