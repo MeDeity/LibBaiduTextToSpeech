@@ -35,5 +35,9 @@ public class CustomApplication extends Application{
 CustomApplication.getInstance().getBaiduTextToSpeech().speak("欢迎使用百度语音合成"));
 ```
 
+扫码体验Demo
+
+![扫码体验](screenshot/TIM图片20190802091614.png)
+
 
 # 有好的建议欢迎PR
