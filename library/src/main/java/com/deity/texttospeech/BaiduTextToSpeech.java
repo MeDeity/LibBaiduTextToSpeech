@@ -74,6 +74,12 @@ public class BaiduTextToSpeech {
         initHandler.sendEmptyMessage(INIT);
     }
 
+    private void checkResult(int result, String method) {
+        if (result != 0) {
+            System.err.println("error code :" + result + " method:" + method);
+        }
+    }
+
     private void initBaiduTextToSpeech(Context context, AuthEntity entity,Map<String, String> params){
         WeakReference<Context> weakReference = new WeakReference<>(context);
         // 离线资源文件， 从assets目录中复制到临时目录，需要在initTTs方法前完成
@@ -87,9 +93,10 @@ public class BaiduTextToSpeech {
         // 3. 设置appId，appKey.secretKey
         int result = mSpeechSynthesizer.setAppId(entity.getAppId());
         Log.d(TAG,"setAppId:"+result);
+        checkResult(result, "setAppId");
         result = mSpeechSynthesizer.setApiKey(entity.getAppKey(), entity.getSecretKey());
         Log.d(TAG,"setApiKey:"+result);
-
+        checkResult(result, "setApiKey");
         // 4. 支持离线的话，需要设置离线模型
         if (Params.ttsMode.equals(TtsMode.MIX)) {
             // 检查离线授权文件是否下载成功，离线授权文件联网时SDK自动下载管理，有效期3年，3年后的最后一个月自动更新。
@@ -148,6 +155,7 @@ public class BaiduTextToSpeech {
         // 6. 初始化
         result = mSpeechSynthesizer.initTts(Params.ttsMode);
         Log.d(TAG, "initTts:"+result);
+        checkResult(result, "initTts");
     }
 
     private BaiduTextToSpeech(Context context,AuthEntity entity,Map<String, String> params){

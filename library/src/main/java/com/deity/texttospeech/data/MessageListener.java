@@ -19,8 +19,8 @@ public class MessageListener implements SpeechSynthesizerListener {
     }
 
     @Override
-    public void onSynthesizeDataArrived(String message, byte[] bytes, int progress) {
-        Log.i(TAG, "合成进度回调, progress：" + progress + ";序列号:" + message );
+    public void onSynthesizeDataArrived(String message, byte[] bytes, int i, int i1) {
+        Log.i(TAG, "合成进度回调, message：" + message +":"+i+"/"+i1 );
     }
 
     @Override
