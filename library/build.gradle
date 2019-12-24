@@ -1,9 +1,10 @@
 apply plugin: 'com.android.library'
 //apply from: "upload.gradle"
 //上传到jcenter配置
+apply plugin: 'com.novoda.bintray-release'
 
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.jfrog.bintray'
+//apply plugin: 'com.github.dcendents.android-maven'
+//apply plugin: 'com.jfrog.bintray'
 
 android {
     compileSdkVersion 28
@@ -47,92 +48,102 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
 
-
-// 声明当前的版本号
-version = "1.0.1"
-//定义当前library的站点
-def siteUrl = 'https://github.com/MeDeity/LibBaiduTextToSpeech'    // project homepage
-def gitUrl = 'https://github.com/MeDeity/LibBaiduTextToSpeech' // project git
-
-//定义组织,这样引用该library就变成:compile 'com.deity.common:common:1.0.0‘
-group = "com.deity.texttospeech"
-
-//上传到jcenter至少需要四个文件，除了打包的aar之外，还需要pom和javadoc，source，否则是通不过jcenter的审核。这些我们都可以用脚本生成。
-
-//生成源文件
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
-}
-
-//生成文档
-task javadoc(type: Javadoc) {
-    //编码GBK的不可映射字符->请正确配置javadoc编码
-    options.encoding "UTF-8"
-    options.charSet 'UTF-8'
-    options.addStringOption('Xdoclint:none', '-quiet')
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-}
-
-//文档打包成jar
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-//上传到jcenter所需要的源码文件
-artifacts {
-    archives javadocJar
-    archives sourcesJar
-}
-
-// 根节点添加
-install {
-    repositories.mavenInstaller {// This generates POM.xml with proper parameters
-        pom {
-            project {
-                packaging 'aar'
-                name 'Text To Speech For Android(Baidu)'
-                url siteUrl
-                // Set your license
-                licenses {
-                    license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                developers {
-                    developer { //填写的一些基本信息
-                        id 'lastDeity'
-                        name 'wenhua.feng'
-                        email 'langrenbule@gmail.com'
-                    }
-                }
-                scm {
-                    connection gitUrl
-                    developerConnection gitUrl
-                    url siteUrl
-                }
-            }
-        }
-    }
+publish {
+    userOrg = 'lastdeity'//bintray.com用户名
+    repoName = 'Android-lib'//默认的仓库名称
+    groupId = 'com.mengya'//jcenter上的路径
+    artifactId = 'LibBaiduTextToSpeech'//项目名称
+    publishVersion = '1.1.0'//版本号
+    desc = 'Baidu Text To Speech Library'
+    website = 'https://github.com/MeDeity/LibBaiduTextToSpeech'
 }
 
 
-//配置bintray参数
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-bintray {
-    user = properties.getProperty("bintrayUser")
-    key = properties.getProperty("bintrayApiKey")
-    configurations = ['archives']
-    pkg {
-        repo = "Android-lib"           //跟jcenter上创建的Maven仓库名字保持一致
-        name = "LibBaiduTextToSpeech"      //发布到JCenter上的项目名字
-        websiteUrl = siteUrl
-        vcsUrl = gitUrl
-        licenses = ["Apache-2.0"]
-        publish = true
-    }
-}
+//// 声明当前的版本号
+//version = "1.1.0"
+////定义当前library的站点
+//def siteUrl = 'https://github.com/MeDeity/LibBaiduTextToSpeech'    // project homepage
+//def gitUrl = 'https://github.com/MeDeity/LibBaiduTextToSpeech' // project git
+//
+////定义组织,这样引用该library就变成:compile 'com.deity.common:common:1.0.0‘
+//group = "com.deity.texttospeech"
+//
+////上传到jcenter至少需要四个文件，除了打包的aar之外，还需要pom和javadoc，source，否则是通不过jcenter的审核。这些我们都可以用脚本生成。
+//
+////生成源文件
+//task sourcesJar(type: Jar) {
+//    from android.sourceSets.main.java.srcDirs
+//    classifier = 'sources'
+//}
+//
+////生成文档
+//task javadoc(type: Javadoc) {
+//    //编码GBK的不可映射字符->请正确配置javadoc编码
+//    options.encoding "UTF-8"
+//    options.charSet 'UTF-8'
+//    options.addStringOption('Xdoclint:none', '-quiet')
+//    source = android.sourceSets.main.java.srcDirs
+//    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+//}
+//
+////文档打包成jar
+//task javadocJar(type: Jar, dependsOn: javadoc) {
+//    classifier = 'javadoc'
+//    from javadoc.destinationDir
+//}
+//
+////上传到jcenter所需要的源码文件
+//artifacts {
+//    archives javadocJar
+//    archives sourcesJar
+//}
+//
+//// 根节点添加
+//install {
+//    repositories.mavenInstaller {// This generates POM.xml with proper parameters
+//        pom {
+//            project {
+//                packaging 'aar'
+//                name 'Text To Speech For Android(Baidu)'
+//                url siteUrl
+//                // Set your license
+//                licenses {
+//                    license {
+//                        name 'The Apache Software License, Version 2.0'
+//                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+//                    }
+//                }
+//                developers {
+//                    developer { //填写的一些基本信息
+//                        id 'lastDeity'
+//                        name 'wenhua.feng'
+//                        email 'langrenbule@gmail.com'
+//                    }
+//                }
+//                scm {
+//                    connection gitUrl
+//                    developerConnection gitUrl
+//                    url siteUrl
+//                }
+//            }
+//        }
+//    }
+//}
+//
+//
+////配置bintray参数
+//Properties properties = new Properties()
+//properties.load(project.rootProject.file('local.properties').newDataInputStream())
+//bintray {
+//    user = properties.getProperty("bintrayUser")
+//    key = properties.getProperty("bintrayApiKey")
+//    configurations = ['archives']
+//    pkg {
+//        repo = "Android-lib"           //跟jcenter上创建的Maven仓库名字保持一致
+//        name = "LibBaiduTextToSpeech"      //发布到JCenter上的项目名字
+//        websiteUrl = siteUrl
+//        vcsUrl = gitUrl
+//        licenses = ["Apache-2.0"]
+//        publish = true
+//    }
+//}
