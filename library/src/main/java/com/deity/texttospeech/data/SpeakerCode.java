@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Set online voice: 0 Normal female voice (default) 1 Normal male voice 2 Special male voice 3 Emotional male voice <Du xiaoyao> 4 Emotional child voice <Du yaya>
+ * Set online voice: 0 Normal female voice (default) 1 Normal male voice 2 Special male voice 3 Emotional male voice Du xiaoyao 4 Emotional child voice Du yaya
  * Create by fengwenhua at 2018/8/10
  **/
 @SuppressWarnings("ALL")

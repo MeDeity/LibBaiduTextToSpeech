@@ -41,12 +41,10 @@ import java.util.TreeSet;
  * 5. ParamKeyExistCheck:Check if key exists, currently check SpeechSynthesizer.PARAM_TTS_TEXT_MODEL_FILE
  * and PARAM_TTS_SPEECH_MODEL_FILE
  * 6.  OfflineResourceFileCheck Check if the offline resource file (need to be copied from the assets directory) exists
- * <p>
- * <p>
  * Example usage code:
  * AutoCheck.getInstance(getApplicationContext()).check(initConfig, new Handler() {
  *
- * @Override public void handleMessage(Message msg) {
+ * public void handleMessage(Message msg) {
  * if (msg.what == 100) {
  * AutoCheck autoCheck = (AutoCheck) msg.obj;
  * synchronized (autoCheck) {
