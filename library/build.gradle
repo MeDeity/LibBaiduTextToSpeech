@@ -59,7 +59,7 @@ dependencies {
 
 
 // 声明当前的版本号
-version = "1.1.0"
+version = "1.1.1"
 //定义当前library的站点
 def siteUrl = 'https://github.com/MeDeity/LibBaiduTextToSpeech'    // project homepage
 def gitUrl = 'https://github.com/MeDeity/LibBaiduTextToSpeech' // project git
