@@ -21,17 +21,17 @@ public class LevelCode {
     public static final int LEVEL_8 = 8;
     public static final int LEVEL_9 = 9;
 
-    /**音量*/
+    /**volume*/
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({LEVEL_0,LEVEL_1,LEVEL_2,LEVEL_3,LEVEL_4,LEVEL_5,LEVEL_6,LEVEL_7,LEVEL_8,LEVEL_9})
     public @interface VolumeLevel{}
 
-    /**语速*/
+    /**speed*/
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({LEVEL_0,LEVEL_1,LEVEL_2,LEVEL_3,LEVEL_4,LEVEL_5,LEVEL_6,LEVEL_7,LEVEL_8,LEVEL_9})
     public @interface SpeedLevel{}
 
-    /**语调*/
+    /**pitch*/
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({LEVEL_0,LEVEL_1,LEVEL_2,LEVEL_3,LEVEL_4,LEVEL_5,LEVEL_6,LEVEL_7,LEVEL_8,LEVEL_9})
     public @interface PitchLevel {}

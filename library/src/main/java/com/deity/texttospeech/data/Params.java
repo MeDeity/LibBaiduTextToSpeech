@@ -11,21 +11,22 @@ import java.io.File;
  **/
 public class Params {
 
-    // TtsMode.MIX; 离在线融合，在线优先； TtsMode.ONLINE 纯在线； 没有纯离线
+    // TtsMode.MIX; off-line integration, online priority; TtsMode.ONLINE pure online; no pure offline
     public static TtsMode ttsMode = TtsMode.MIX;
 
-    // 离线发音选择，VOICE_FEMALE即为离线女声发音。
-    // assets目录下bd_etts_common_speech_m15_mand_eng_high_am-mix_v3.0.0_20170505.dat为离线男声模型；
-    // assets目录下bd_etts_common_speech_f7_mand_eng_high_am-mix_v3.0.0_20170512.dat为离线女声模型
+    // Offline pronunciation selection, VOICE_FEMALE is the offline female voice.
+    // bd_etts_common_speech_m15_mand_eng_high_am-mix_v3.0.0_20170505.dat in the assets directory is an offline male voice model;
+    // bd_etts_common_speech_f7_mand_eng_high_am-mix_v3.0.0_20170512.dat in the assets directory is an offline female voice model
     public static String offlineVoice = OfflineResource.VOICE_DUYY;
 
 
-    // ================选择TtsMode.ONLINE  不需要设置以下参数; 选择TtsMode.MIX 需要设置下面2个离线资源文件的路径
-    private static final String TEMP_DIR = "/sdcard/baiduTTS"; // 重要！请手动将assets目录下的3个dat 文件复制到该目录
+    // Selecting TtsMode.ONLINE does not require setting the following parameters; selecting TtsMode.MIX requires setting the path of the following 2 offline resource files
+    //important! Please manually copy the 3 dat files under the assets directory to this directory
+    private static final String TEMP_DIR = "/sdcard/baiduTTS";
 
-    // 文本模型文件路径 (离线引擎使用)， 注意TEXT_FILENAME必须存在并且可读
+    // Text model file path (for offline engines), note that TEXT_FILENAME must exist and be readable
     public static final String TEXT_FILENAME = TEMP_DIR + File.separator + "bd_etts_text.dat";
 
-    // 声学模型文件路径 (离线引擎使用)， 注意TEXT_FILENAME必须存在并且可读(m15是离线男声)
+    // Acoustic model file path (for offline engine use), note that TEXT_FILENAME must exist and change (m15 is offline male voice)
     public static final String MODEL_FILENAME = TEMP_DIR + File.separator + "bd_etts_common_speech_as_mand_eng_high_am_v3.0.0_20170516.dat";
 }

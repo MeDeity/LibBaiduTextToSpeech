@@ -13,8 +13,8 @@ import java.util.Map;
 
 public class InitConfig {
     /**
-     * appId appKey 和 secretKey。注意如果需要离线合成功能,请在您申请的应用中填写包名。
-     * 本demo的包名是com.baidu.tts.sample，定义在build.gradle中。
+     * appId appKey and secretKey. Note If you need offline synthesis function, please fill in the package name in the application you applied for.
+     * The package name of this demo is com.baidu.tts.sample, which is defined in build.gradle.
      */
     private String appId;
 
@@ -23,18 +23,18 @@ public class InitConfig {
     private String secretKey;
 
     /**
-     * 纯在线或者离在线融合
+     * Pure online or off-line fusion
      */
     private TtsMode ttsMode;
 
 
     /**
-     * 初始化的其它参数，用于setParam
+     * init params
      */
     private Map<String, String> params;
 
     /**
-     * 合成引擎的回调
+     * Synthesizer listener
      */
     private SpeechSynthesizerListener listener;
 

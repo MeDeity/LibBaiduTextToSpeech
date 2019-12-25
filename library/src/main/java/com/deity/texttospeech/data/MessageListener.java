@@ -6,7 +6,6 @@ import com.baidu.tts.client.SpeechError;
 import com.baidu.tts.client.SpeechSynthesizerListener;
 
 /**
- * 这里添加文件描述
  * Create by fengwenhua at 2018/8/9
  **/
 public class MessageListener implements SpeechSynthesizerListener {
@@ -15,37 +14,37 @@ public class MessageListener implements SpeechSynthesizerListener {
     
     @Override
     public void onSynthesizeStart(String message) {
-        Log.d(TAG,"准备开始合成,序列号:" + message);
+        Log.d(TAG,"start Synthesize,message:" + message);
     }
 
     @Override
     public void onSynthesizeDataArrived(String message, byte[] bytes, int i, int i1) {
-        Log.i(TAG, "合成进度回调, message：" + message +":"+i+"/"+i1 );
+        Log.i(TAG, "Synthesize callback, message:" + message +":"+i+"/"+i1 );
     }
 
     @Override
     public void onSynthesizeFinish(String message) {
-        Log.d(TAG,"合成结束回调, 序列号:" + message);
+        Log.d(TAG,"Synthesize finish,message:" + message);
     }
 
     @Override
     public void onSpeechStart(String message) {
-        Log.d(TAG,"播放开始回调, 序列号:" + message);
+        Log.d(TAG,"speech start, message:" + message);
     }
 
     @Override
     public void onSpeechProgressChanged(String message, int progress) {
-        Log.i(TAG, "播放进度回调, progress：" + progress + ";序列号:" + message);
+        Log.i(TAG, "speech progress:" + progress + ";message:" + message);
     }
 
     @Override
     public void onSpeechFinish(String message) {
-        Log.d(TAG,"播放结束回调, 序列号:" + message);
+        Log.d(TAG,"speech finish, message:" + message);
     }
 
     @Override
+
     public void onError(String message, SpeechError speechError) {
-        Log.d(TAG,"错误发生：" + speechError.description + "，错误编码："
-                + speechError.code + "，序列号:" + message);
+        Log.d(TAG,"description:" + speechError.description + ",code:" + speechError.code + ",serial:" + message);
     }
 }

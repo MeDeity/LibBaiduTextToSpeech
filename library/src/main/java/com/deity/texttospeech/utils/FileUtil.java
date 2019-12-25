@@ -17,7 +17,7 @@ import java.io.InputStream;
 public class FileUtil {
     private static final String TAG = FileUtil.class.getSimpleName();
 
-    // 创建一个临时目录，用于复制临时文件，如assets目录下的离线资源文件
+    // Create a temporary directory for copying temporary files, such as offline resource files in the assets directory
     public static String createTmpDir(Context context) {
         String sampleDir = "baiduTTS";
         String tmpDir = Environment.getExternalStorageDirectory().toString() + File.separator + sampleDir;

@@ -75,12 +75,12 @@ public class OfflineResource {
     private String copyAssetsFile(String sourceFilename) throws IOException {
         String destFilename = destPath + "/" + sourceFilename;
         boolean recover = false;
-        Boolean existed = mapInitied.get(sourceFilename); // 启动时完全覆盖一次
+        Boolean existed = mapInitied.get(sourceFilename); // Full coverage once at startup
         if (existed == null || !existed) {
             recover = true;
         }
         FileUtil.copyFromAssets(assets, sourceFilename, destFilename, recover);
-        Log.i(TAG, "文件复制成功：" + destFilename);
+        Log.i(TAG, "File copied successfully:" + destFilename);
         return destFilename;
     }
 

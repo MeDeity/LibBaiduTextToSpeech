@@ -31,19 +31,19 @@ import java.util.TreeSet;
  */
 
 /**
- * 自动排查工具，用于集成后发现错误。
+ * Automatic troubleshooting tools for errors found after integration.
  * <p>
- * 可以检测如下错误：
- * 1. PermissionCheck ： AndroidManifest,xml 需要的部分权限
- * 2. JniCheck： 检测so文件是否安装在指定目录
- * 3. AppInfoCheck: 联网情况下 , 检测appId appKey secretKey是否正确
- * 4. ApplicationIdCheck: 显示包名applicationId， 提示用户手动去官网检查
- * 5. ParamKeyExistCheck： 检查key是否存在，目前检查 SpeechSynthesizer.PARAM_TTS_TEXT_MODEL_FILE
- * 和PARAM_TTS_SPEECH_MODEL_FILE
- * 6.  OfflineResourceFileCheck 检查离线资源文件（需要从assets目录下复制），是否存在
+ * The following errors can be detected:
+ * 1. PermissionCheck:AndroidManifest,xml Required permissions
+ * 2. JniCheck: Check if the so file is installed in the specified directory
+ * 3. AppInfoCheck: In the case of networking, check whether the appId appKey secretKey is correct
+ * 4. ApplicationIdCheck: Display the package name applicationId, prompt the user to manually check the official website
+ * 5. ParamKeyExistCheck:Check if key exists, currently check SpeechSynthesizer.PARAM_TTS_TEXT_MODEL_FILE
+ * and PARAM_TTS_SPEECH_MODEL_FILE
+ * 6.  OfflineResourceFileCheck Check if the offline resource file (need to be copied from the assets directory) exists
  * <p>
  * <p>
- * 示例使用代码：
+ * Example usage code:
  * AutoCheck.getInstance(getApplicationContext()).check(initConfig, new Handler() {
  *
  * @Override public void handleMessage(Message msg) {
@@ -51,7 +51,7 @@ import java.util.TreeSet;
  * AutoCheck autoCheck = (AutoCheck) msg.obj;
  * synchronized (autoCheck) {
  * String message = autoCheck.obtainDebugMessage();
- * toPrint(message); // 可以用下面一行替代，在logcat中查看代码
+ * toPrint(message); // Can be replaced with the following line, view the code in logcat
  * //Log.w("AutoCheckMessage",message);
  * }
  * }
@@ -72,9 +72,7 @@ public class AutoCheck {
     volatile boolean isFinished = false;
 
     /**
-     * 获取实例，非线程安全
-     *
-     * @return
+     * Get instance, non-thread safe
      */
     public static AutoCheck getInstance(Context context) {
         if (instance == null || AutoCheck.context != context) {
@@ -89,7 +87,7 @@ public class AutoCheck {
             public void run() {
                 AutoCheck obj = innerCheck(initConfig);
                 isFinished = true;
-                synchronized (obj) { // 偶发，同步线程信息
+                synchronized (obj) { // Sporadic, synchronizing thread information
                     Message msg = handler.obtainMessage(100, obj);
                     handler.sendMessage(msg);
                 }
@@ -100,22 +98,22 @@ public class AutoCheck {
     }
 
     private AutoCheck innerCheck(InitConfig config) {
-        checks.put("检查申请的Android权限", new PermissionCheck(context));
-        checks.put("检查4个so文件是否存在", new JniCheck(context));
-        checks.put("检查AppId AppKey SecretKey",
+        checks.put("Check for applied Android permissions", new PermissionCheck(context));
+        checks.put("Check if 4 so files exist", new JniCheck(context));
+        checks.put("Check AppId AppKey SecretKey",
                 new AppInfoCheck(config.getAppId(), config.getAppKey(), config.getSecretKey()));
-        checks.put("检查包名", new ApplicationIdCheck(context, config.getAppId()));
+        checks.put("Check package name", new ApplicationIdCheck(context, config.getAppId()));
 
         if (TtsMode.MIX.equals(config.getTtsMode())) {
             Map<String, String> params = config.getParams();
             String fileKey = SpeechSynthesizer.PARAM_TTS_TEXT_MODEL_FILE;
-            checks.put("检查离线资TEXT文件参数", new ParamKeyExistCheck(params, fileKey,
-                    "SpeechSynthesizer.PARAM_TTS_TEXT_MODEL_FILE未设置 ，"));
-            checks.put("检查离线资源TEXT文件", new OfflineResourceFileCheck(params.get(fileKey)));
+            checks.put("Check offline text file parameters", new ParamKeyExistCheck(params, fileKey,
+                    "SpeechSynthesizer.PARAM_TTS_TEXT_MODEL_FILE is not set,"));
+            checks.put("Check offline resource text files", new OfflineResourceFileCheck(params.get(fileKey)));
             fileKey = SpeechSynthesizer.PARAM_TTS_SPEECH_MODEL_FILE;
-            checks.put("检查离线资Speech文件参数", new ParamKeyExistCheck(params, fileKey,
-                    "SpeechSynthesizer.PARAM_TTS_SPEECH_MODEL_FILE未设置 ，"));
-            checks.put("检查离线资源Speech文件", new OfflineResourceFileCheck(params.get(fileKey)));
+            checks.put("Check offline resource Speech file parameters", new ParamKeyExistCheck(params, fileKey,
+                    "SpeechSynthesizer.PARAM_TTS_SPEECH_MODEL_FILE is not set,"));
+            checks.put("Check offline resources Speech files", new OfflineResourceFileCheck(params.get(fileKey)));
         }
 
         for (Map.Entry<String, Check> e : checks.entrySet()) {
@@ -158,20 +156,20 @@ public class AutoCheck {
                     hasError = true;
                 }
 
-                sb.append("【错误】【").append(testName).append(" 】  ").append(check.getErrorMessage()).append("\n");
+                sb.append("[ERROR][").append(testName).append("]").append(check.getErrorMessage()).append("\n");
                 if (check.hasFix()) {
-                    sb.append("【修复方法】【").append(testName).append(" 】  ").append(check.getFixMessage()).append("\n");
+                    sb.append("[Repair method] [").append(testName).append("]").append(check.getFixMessage()).append("\n");
                 }
             }
             if (config.withInfo && check.hasInfo()) {
-                sb.append("【请手动检查】【").append(testName).append("】 ").append(check.getInfoMessage()).append("\n");
+                sb.append("[Please check manually] [").append(testName).append("]").append(check.getInfoMessage()).append("\n");
             }
             if (config.withLog && (config.withLogOnSuccess || hasError) && check.hasLog()) {
-                sb.append("【log】:" + check.getLogMessage()).append("\n");
+                sb.append("[Log]:" + check.getLogMessage()).append("\n");
             }
         }
         if (!hasError) {
-            sb.append("集成自动排查工具： 恭喜没有检测到任何问题\n");
+            sb.append("Integrated automated troubleshooting tools: Congratulations no problems detected\n");
         }
         return sb.toString();
     }
@@ -218,12 +216,12 @@ public class AutoCheck {
             for (String perm : permissions) {
                 if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(context, perm)) {
                     toApplyList.add(perm);
-                    // 进入到这里代表没有权限.
+                    // Enter here means no permissions.
                 }
             }
             if (!toApplyList.isEmpty()) {
-                errorMessage = "缺少权限：" + toApplyList;
-                fixMessage = "请从AndroidManifest.xml复制相关权限";
+                errorMessage = "Missing permissions:" + toApplyList;
+                fixMessage = "Please copy the relevant permissions from AndroidManifest.xml";
             }
         }
     }
@@ -241,7 +239,7 @@ public class AutoCheck {
         @Override
         public void check() {
             String path = context.getApplicationInfo().nativeLibraryDir;
-            appendLogMessage("Jni so文件目录 " + path);
+            appendLogMessage("Jni so file directory" + path);
             File[] files = new File(path).listFiles();
             TreeSet<String> set = new TreeSet<>();
             if (files != null) {
@@ -251,12 +249,12 @@ public class AutoCheck {
                     }
                 }
             }
-            appendLogMessage("Jni目录内文件: " + set.toString());
+            appendLogMessage("Files in the Jni directory:" + set.toString());
             for (String name : soNames) {
                 if (!set.contains(name)) {
-                    errorMessage = "Jni目录" + path + " 缺少可读的so文件：" + name + "， 该目录文件列表: " + set.toString();
-                    fixMessage = "如果您的app内没有其它so文件，请复制demo里的src/main/jniLibs至同名目录。"
-                            + " 如果app内有so文件，请合并目录放一起(注意目录取交集，多余的目录删除)。";
+                    errorMessage = "Jni directory" + path + " Missing readable so file:" + name + ",List of files in this directory:" + set.toString();
+                    fixMessage = "If there are no other so files in your app, please copy src / main / jniLibs in the demo to the directory with the same name."
+                            + "If there are so files in the app, please merge the directories together (note the intersection of directories and delete unnecessary directories).";
                     break;
                 }
             }
@@ -277,8 +275,8 @@ public class AutoCheck {
         @Override
         public void check() {
             if (params == null || !params.containsKey(key)) {
-                errorMessage = prefixErrorMessage + " 参数中没有设置：" + key;
-                fixMessage = "请参照demo在设置 " + key + "参数";
+                errorMessage = prefixErrorMessage + " Not set in the parameters:" + key;
+                fixMessage = "Please refer to demo in settings " + key + "parameter";
             }
         }
     }
@@ -322,8 +320,8 @@ public class AutoCheck {
 
         @Override
         public void check() {
-            infoMessage = "如果您集成过程中遇见离线合成初始化问题，请检查网页上appId：" + appId
-                    + " 应用是否开通了合成服务，并且网页上的应用填写了Android包名："
+            infoMessage = "If you encounter offline synthesis initialization problems during integration, please check the appId on the webpage:" + appId
+                    + " Whether the application has launched a synthesis service, and the application on the webpage is filled with the Android package name:"
                     + getApplicationId();
         }
 
@@ -349,17 +347,17 @@ public class AutoCheck {
             do {
                 appendLogMessage("try to check appId " + appId + " ,appKey=" + appKey + " ,secretKey" + secretKey);
                 if (appId == null || appId.isEmpty()) {
-                    errorMessage = "appId 为空";
-                    fixMessage = "填写appID";
+                    errorMessage = "appId is empty";
+                    fixMessage = "Fill in appID";
                     break;
                 }
                 if (appKey == null || appKey.isEmpty()) {
-                    errorMessage = "appKey 为空";
-                    fixMessage = "填写appID";
+                    errorMessage = "appKey is empty";
+                    fixMessage = "Fill in appID";
                     break;
                 }
                 if (secretKey == null || secretKey.isEmpty()) {
-                    errorMessage = "secretKey 为空";
+                    errorMessage = "secretKey Is empty";
                     fixMessage = "secretKey";
                     break;
                 }
@@ -368,10 +366,10 @@ public class AutoCheck {
             try {
                 checkOnline();
             } catch (UnknownHostException e) {
-                infoMessage = "无网络或者网络不连通，忽略检测 : " + e.getMessage();
+                infoMessage = "No network or network disconnection, ignore detection:" + e.getMessage();
             } catch (Exception e) {
                 errorMessage = e.getClass().getCanonicalName() + ":" + e.getMessage();
-                fixMessage = " 重新检测appId， appKey， appSecret是否正确";
+                fixMessage = " Recheck whether appId, appKey, appSecret are correct";
             }
         }
 
@@ -397,11 +395,11 @@ public class AutoCheck {
             JSONObject jsonObject = new JSONObject(res);
             String error = jsonObject.optString("error");
             if (error != null && !error.isEmpty()) {
-                throw new Exception("appkey secretKey 错误" + ", error:" + error + ", json is" + result);
+                throw new Exception("appkey secretKey error" + ", error:" + error + ", json is" + result);
             }
             String token = jsonObject.getString("access_token");
             if (token == null || !token.endsWith("-" + appId)) {
-                throw new Exception("appId 与 appkey及 appSecret 不一致。appId = " + appId + " ,token = " + token);
+                throw new Exception("appId is inconsistent with appkey and appSecret.appId = " + appId + " ,token = " + token);
             }
         }
 

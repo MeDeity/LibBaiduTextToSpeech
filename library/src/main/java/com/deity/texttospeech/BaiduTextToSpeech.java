@@ -35,7 +35,7 @@ public class BaiduTextToSpeech {
     private static final int RELEASE = 11;
 
     private static BaiduTextToSpeech baiduTextToSpeech;
-    /**百度语音合成器*/
+    /**Baidu speech synthesizer*/
     private SpeechSynthesizer mSpeechSynthesizer;
     private HandlerThread initHandleThread;
     private Handler initHandler;
@@ -48,7 +48,7 @@ public class BaiduTextToSpeech {
             offlineResource = new OfflineResource(context, voiceType);
         } catch (IOException e) {
             // IO 错误自行处理
-            Log.d(TAG,"【error】:copy files from assets failed." + e.getMessage());
+            Log.d(TAG,"[error]:copy files from assets failed." + e.getMessage());
         }
         return offlineResource;
     }
@@ -82,58 +82,58 @@ public class BaiduTextToSpeech {
 
     private void initBaiduTextToSpeech(Context context, AuthEntity entity,Map<String, String> params){
         WeakReference<Context> weakReference = new WeakReference<>(context);
-        // 离线资源文件， 从assets目录中复制到临时目录，需要在initTTs方法前完成
+        // Offline resource files, copied from the assets directory to the temporary directory, need to be completed before the initTTs method
         OfflineResource offlineResource = createOfflineResource(weakReference.get(), Params.offlineVoice);
-        // 1. 获取实例
+        // 1. Get instance
         mSpeechSynthesizer = SpeechSynthesizer.getInstance();
         mSpeechSynthesizer.setContext(weakReference.get());
-        // 2. 设置listener
+        // 2. Set listener
         SpeechSynthesizerListener listener = new MessageListener();
         mSpeechSynthesizer.setSpeechSynthesizerListener(listener);
-        // 3. 设置appId，appKey.secretKey
+        // 3. Set appId, appKey.secretKey
         int result = mSpeechSynthesizer.setAppId(entity.getAppId());
         Log.d(TAG,"setAppId:"+result);
         checkResult(result, "setAppId");
         result = mSpeechSynthesizer.setApiKey(entity.getAppKey(), entity.getSecretKey());
         Log.d(TAG,"setApiKey:"+result);
         checkResult(result, "setApiKey");
-        // 4. 支持离线的话，需要设置离线模型
+        // 4. If you support offline, you need to set offline model
         if (Params.ttsMode.equals(TtsMode.MIX)) {
-            // 检查离线授权文件是否下载成功，离线授权文件联网时SDK自动下载管理，有效期3年，3年后的最后一个月自动更新。
+            // Check whether the offline authorization file is downloaded successfully. The SDK automatically downloads and manages the offline authorization file when it is connected to the network. The validity period is 3 years, and it is automatically updated in the last month after 3 years.
             if (!checkAuth()) {
                 return;
             }
-            // 文本模型文件路径 (离线引擎使用)， 注意TEXT_FILENAME必须存在并且可读
+            // Text model file path (for offline engines), note that TEXT_FILENAME must exist and be readable
             mSpeechSynthesizer.setParam(SpeechSynthesizer.PARAM_TTS_TEXT_MODEL_FILE, Params.TEXT_FILENAME);
-            // 声学模型文件路径 (离线引擎使用)， 注意TEXT_FILENAME必须存在并且可读
+            // Acoustic model file path (for offline engines), note that TEXT_FILENAME must exist and be readable
             mSpeechSynthesizer.setParam(SpeechSynthesizer.PARAM_TTS_SPEECH_MODEL_FILE, Params.MODEL_FILENAME);
         }
 
 
-        // 5. 以下setParam 参数选填。不填写则默认值生效
-        // 设置在线发声音人： 0 普通女声（默认） 1 普通男声 2 特别男声 3 情感男声<度逍遥> 4 情感儿童声<度丫丫>
-        mSpeechSynthesizer.setParam(SpeechSynthesizer.PARAM_SPEAKER, "4");
-        // 设置合成的音量，0-9 ，默认 5
+        // 5. The following setParam parameters are optional. If not filled, the default value will take effect
+        // Set online voice: 0 common female voice (default) 1 common male voice 2 special male voice 3 emotional male voice 4 emotional child voice
+        mSpeechSynthesizer.setParam(SpeechSynthesizer.PARAM_SPEAKER, "0");
+        // Set composition volume, 0-9, default 5
         mSpeechSynthesizer.setParam(SpeechSynthesizer.PARAM_VOLUME, "9");
-        // 设置合成的语速，0-9 ，默认 5
+        //Set synthetic speech rate, 0-9, default 5
         mSpeechSynthesizer.setParam(SpeechSynthesizer.PARAM_SPEED, "5");
-        // 设置合成的语调，0-9 ，默认 5
+        // Set synthetic intonation, 0-9, default 5
         mSpeechSynthesizer.setParam(SpeechSynthesizer.PARAM_PITCH, "5");
         mSpeechSynthesizer.setParam(SpeechSynthesizer.PARAM_MIX_MODE, SpeechSynthesizer.MIX_MODE_DEFAULT);
 
-        if (null!=params){//setParam 参数选填。不填写则默认值生效
+        if (null!=params){//setParam Optional. If not filled, the default value will take effect
             for (Map.Entry<String, String> entry:params.entrySet()){
                 mSpeechSynthesizer.setParam(entry.getKey(),entry.getValue());
             }
         }
         mSpeechSynthesizer.setAudioStreamType(AudioManager.MODE_IN_CALL);
-        // 不使用压缩传输
+        // No compressed transmission
         // mSpeechSynthesizer.setParam(SpeechSynthesizer.PARAM_AUDIO_ENCODE, SpeechSynthesizer.AUDIO_ENCODE_PCM);
         // mSpeechSynthesizer.setParam(SpeechSynthesizer.PARAM_AUDIO_RATE, SpeechSynthesizer.AUDIO_BITRATE_PCM);
 
-        // x. 额外 ： 自动so文件是否复制正确及上面设置的参数
+        // x. Extra: whether the automatic so file is copied correctly and the parameters set above
         Map<String, String> checkParams = new HashMap<>();
-        // 复制下上面的 mSpeechSynthesizer.setParam参数
+        // Copy the mSpeechSynthesizer.setParam parameter above
         if (Params.ttsMode.equals(TtsMode.MIX)) {
             checkParams.put(SpeechSynthesizer.PARAM_TTS_TEXT_MODEL_FILE, Params.TEXT_FILENAME);
             checkParams.put(SpeechSynthesizer.PARAM_TTS_SPEECH_MODEL_FILE, Params.MODEL_FILENAME);
@@ -141,7 +141,7 @@ public class BaiduTextToSpeech {
         InitConfig initConfig =  new InitConfig(entity.getAppId(), entity.getAppKey(), entity.getSecretKey(), Params.ttsMode, checkParams, listener);
         AutoCheck.getInstance(weakReference.get()).check(initConfig, new Handler() {
             @Override
-            public void handleMessage(Message msg) {//开新线程检查，成功后回调
+            public void handleMessage(Message msg) {//Open a new thread check, callback after success
                 if (msg.what == 100) {
                     AutoCheck autoCheck = (AutoCheck) msg.obj;
                     synchronized (autoCheck) {
@@ -152,7 +152,7 @@ public class BaiduTextToSpeech {
             }
 
         });
-        // 6. 初始化
+        // 6. initialization
         result = mSpeechSynthesizer.initTts(Params.ttsMode);
         Log.d(TAG, "initTts:"+result);
         checkResult(result, "initTts");
@@ -173,10 +173,10 @@ public class BaiduTextToSpeech {
 
 
     /**
-     * 获取唯一实例
-     * @param context 上下文
-     * @param params  参数内容
-     * @return  实例
+     * Get unique instance
+     * @param context context
+     * @param params  params
+     * @return  Get unique instance
      */
     public static BaiduTextToSpeech getInstance(Context context,AuthEntity entity,Map<String, String> params){
         if (null==baiduTextToSpeech){
@@ -201,12 +201,12 @@ public class BaiduTextToSpeech {
     }
 
     /**
-     * 调用该方法进行语音输出
-     * @param message 文本内容
+     * Call this method for voice output
+     * @param message Text content
      */
     public void speak(String message){
         if (mSpeechSynthesizer == null) {
-            Log.d(TAG,"[ERROR], 初始化失败");
+            Log.e(TAG,"[ERROR], Initialization failed");
             return;
         }
         int result = mSpeechSynthesizer.speak(message);
@@ -215,25 +215,25 @@ public class BaiduTextToSpeech {
 
 
     /**
-     * 检查appId ak sk 是否填写正确，另外检查官网应用内设置的包名是否与运行时的包名一致。本demo的包名定义在build.gradle文件中
-     * 离线授权需要网站上的应用填写包名。本demo的包名是com.baidu.tts.sample，定义在build.gradle中
-     * @return 是否授权成功
+     * Check whether the appId ak sk is filled in correctly, and check whether the package name set in the official website application is consistent with the package name at runtime. The package name of this demo is defined in the build.gradle file
+     * Offline authorization requires the application on the website to fill in the package name. The package name of this demo is com.baidu.tts.sample, which is defined in build.gradle
+     * @return Whether authorization is successful
      */
     private boolean checkAuth() {
         AuthInfo authInfo = mSpeechSynthesizer.auth(Params.ttsMode);
         if (!authInfo.isSuccess()) {
             //
             String errorMsg = authInfo.getTtsError().getDetailMessage();
-            Log.d(TAG,"【error】鉴权失败 errorMsg=" + errorMsg);
+            Log.d(TAG,"[Error] Authentication failed errorMsg =" + errorMsg);
             return false;
         } else {
-            Log.d(TAG,"验证通过，离线正式授权文件存在。");
+            Log.d(TAG,"Validation passed, offline official authorization file exists.");
             return true;
         }
     }
 
 
-    /**释放资源*/
+    /**Release resources*/
     public void onDestroy() {
         if (mSpeechSynthesizer != null) {
             mSpeechSynthesizer.stop();
