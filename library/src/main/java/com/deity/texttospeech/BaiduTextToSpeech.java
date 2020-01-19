@@ -101,7 +101,10 @@ public class BaiduTextToSpeech {
         // 4. If you support offline, you need to set offline model
         if (Params.ttsMode.equals(TtsMode.MIX)) {
             // Check whether the offline authorization file is downloaded successfully. The SDK automatically downloads and manages the offline authorization file when it is connected to the network. The validity period is 3 years, and it is automatically updated in the last month after 3 years.
-            if (!checkAuth()) {
+            AuthInfo auth = checkAuth();
+            if (!auth.isSuccess()) {
+                String errorMsg = auth.getTtsError().getDetailMessage();
+                initCallback.result(-1,"Authentication failed:"+errorMsg);
                 return;
             }
             // Text model file path (for offline engines), note that TEXT_FILENAME must exist and be readable
@@ -157,7 +160,7 @@ public class BaiduTextToSpeech {
         result = mSpeechSynthesizer.initTts(Params.ttsMode);
         Log.d(TAG, "initTts:"+result);
         checkResult(result, "initTts");
-        initCallback.result(result);
+        initCallback.result(result,"");
 
     }
 
@@ -233,17 +236,17 @@ public class BaiduTextToSpeech {
      * Offline authorization requires the application on the website to fill in the package name. The package name of this demo is com.baidu.tts.sample, which is defined in build.gradle
      * @return Whether authorization is successful
      */
-    private boolean checkAuth() {
+    private AuthInfo checkAuth() {
         AuthInfo authInfo = mSpeechSynthesizer.auth(Params.ttsMode);
-        if (!authInfo.isSuccess()) {
-            //
-            String errorMsg = authInfo.getTtsError().getDetailMessage();
-            Log.d(TAG,"[Error] Authentication failed errorMsg =" + errorMsg);
-            return false;
-        } else {
-            Log.d(TAG,"Validation passed, offline official authorization file exists.");
-            return true;
-        }
+        return authInfo;
+//        if (!authInfo.isSuccess()) {
+//            String errorMsg = authInfo.getTtsError().getDetailMessage();
+//            Log.d(TAG,"[Error] Authentication failed errorMsg =" + errorMsg);
+//            return false;
+//        } else {
+//            Log.d(TAG,"Validation passed, offline official authorization file exists.");
+//            return true;
+//        }
     }
 
 
