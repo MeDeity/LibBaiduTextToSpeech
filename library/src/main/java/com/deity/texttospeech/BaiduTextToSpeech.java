@@ -204,6 +204,17 @@ public class BaiduTextToSpeech {
     }
 
     /**
+     * 尝试初始化插件
+     * @return 方法是否成功调用
+     */
+    public boolean initBaiduConfig(){
+        if(null!=initHandler) {
+            initHandler.sendEmptyMessage(INIT);
+        }
+        return (null!=initHandler);
+    }
+
+    /**
      * Call this method for voice output
      * @param message Text content
      */
