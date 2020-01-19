@@ -11,6 +11,7 @@ import com.baidu.tts.auth.AuthInfo;
 import com.baidu.tts.client.SpeechSynthesizer;
 import com.baidu.tts.client.SpeechSynthesizerListener;
 import com.baidu.tts.client.TtsMode;
+import com.deity.texttospeech.callback.InitCallback;
 import com.deity.texttospeech.data.AuthEntity;
 import com.deity.texttospeech.data.InitConfig;
 import com.deity.texttospeech.data.MessageListener;
@@ -53,7 +54,7 @@ public class BaiduTextToSpeech {
         return offlineResource;
     }
 
-    private void initBaiduTextToSpeechHandleThread(final AuthEntity entity, final Map<String, String> params){
+    private void initBaiduTextToSpeechHandleThread(final AuthEntity entity, final Map<String, String> params, final InitCallback initCallback){
         initHandleThread = new HandlerThread("initHandleThread");
         initHandleThread.start();
         initHandler = new Handler(initHandleThread.getLooper()){
@@ -62,7 +63,7 @@ public class BaiduTextToSpeech {
                 super.handleMessage(msg);
                 switch (msg.what){
                     case INIT:
-                        initBaiduTextToSpeech(context,entity,params);
+                        initBaiduTextToSpeech(context,entity,params,initCallback);
                         break;
                     case RELEASE:
                         break;
@@ -80,7 +81,7 @@ public class BaiduTextToSpeech {
         }
     }
 
-    private void initBaiduTextToSpeech(Context context, AuthEntity entity,Map<String, String> params){
+    private void initBaiduTextToSpeech(Context context, AuthEntity entity,Map<String, String> params,InitCallback initCallback){
         WeakReference<Context> weakReference = new WeakReference<>(context);
         // Offline resource files, copied from the assets directory to the temporary directory, need to be completed before the initTTs method
         OfflineResource offlineResource = createOfflineResource(weakReference.get(), Params.offlineVoice);
@@ -156,11 +157,13 @@ public class BaiduTextToSpeech {
         result = mSpeechSynthesizer.initTts(Params.ttsMode);
         Log.d(TAG, "initTts:"+result);
         checkResult(result, "initTts");
+        initCallback.result(result);
+
     }
 
-    private BaiduTextToSpeech(Context context,AuthEntity entity,Map<String, String> params){
+    private BaiduTextToSpeech(Context context,AuthEntity entity,Map<String, String> params,InitCallback initCallback){
         this.context = context;
-        initBaiduTextToSpeechHandleThread(entity,params);
+        initBaiduTextToSpeechHandleThread(entity,params,initCallback);
     }
 
 //    private static class NoLeakHandler extends Handler{
@@ -178,22 +181,22 @@ public class BaiduTextToSpeech {
      * @param params  params
      * @return  Get unique instance
      */
-    public static BaiduTextToSpeech getInstance(Context context,AuthEntity entity,Map<String, String> params){
+    public static BaiduTextToSpeech getInstance(Context context,AuthEntity entity,Map<String, String> params,InitCallback initCallback){
         if (null==baiduTextToSpeech){
             synchronized (BaiduTextToSpeech.class){
                 if (null==baiduTextToSpeech){
-                    baiduTextToSpeech = new BaiduTextToSpeech(context,entity,params);
+                    baiduTextToSpeech = new BaiduTextToSpeech(context,entity,params,initCallback);
                 }
             }
         }
         return baiduTextToSpeech;
     }
 
-    public static BaiduTextToSpeech getInstance(Context context,AuthEntity entity){
+    public static BaiduTextToSpeech getInstance(Context context, AuthEntity entity, InitCallback initCallback){
         if (null==baiduTextToSpeech){
             synchronized (BaiduTextToSpeech.class){
                 if (null==baiduTextToSpeech){
-                    baiduTextToSpeech = new BaiduTextToSpeech(context,entity,null);
+                    baiduTextToSpeech = new BaiduTextToSpeech(context,entity,null,initCallback);
                 }
             }
         }
